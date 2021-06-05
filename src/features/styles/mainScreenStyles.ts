@@ -4,17 +4,12 @@ import {WIDTH, HEIGHT} from '../../constants/constants';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'red',
   },
 
   carouselWrap: {
-    overflow: 'hidden',
     position: 'absolute',
   },
-  closed: {
-    width: 0,
-    height: 0,
-  },
+ 
   open: {
     width: WIDTH,
     height: HEIGHT,

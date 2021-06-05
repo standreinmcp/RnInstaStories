@@ -1,10 +1,16 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import {ScrollView, View, Image, Pressable} from 'react-native';
 
 import storiesMockData from '../constants/storiesMockData';
 import {styles} from './styles/bubblesStyles';
+import {OpenCarouselProps} from '../constants/types';
 
-export const Bubbles = () => {
+interface Props {
+  openCarousel: (params: OpenCarouselProps) => void;
+}
+
+export const Bubbles: React.FC<Props> = ({openCarousel}) => {
+  const bubbleRef = useRef(null).current;
   return (
     <View style={styles.container}>
       <View>
@@ -14,8 +20,9 @@ export const Bubbles = () => {
           horizontal={true}
           showsHorizontalScrollIndicator={false}>
           {storiesMockData.map((story, i) => (
-            <View key={i}>
-              <Pressable>
+            <View ref={bubbleRef} key={i}>
+              <Pressable onPress={() => {
+                openCarousel({idx: i})}}>
                 <Image style={styles.img} source={{uri: story.avatar}} />
               </Pressable>
             </View>

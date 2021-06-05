@@ -8,3 +8,8 @@ export type Story = {
   idx: number;
   avatar: string;
 };
+
+
+export type OpenCarouselProps = { 
+  idx: number
+}
