@@ -15,10 +15,7 @@ interface Props {
 
 export const Story: React.FC<Props> = ({ display }) => {
   const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
-  const [currentIndex, setCurrentIndex] = useState({
-    index: 0,
-    duration: mockStories[0].stories[0].duration
-  });
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const barWidth = useState(new Animated.Value(0))[0];
 
@@ -29,7 +26,7 @@ export const Story: React.FC<Props> = ({ display }) => {
     }
     else {
       const direction = event.nativeEvent.locationX < width / 2 ? -1 : 1
-      setCurrentIndex(prevState => ({ ...prevState, index: prevState.index + direction, duration: mockStories[currentStoryIndex].stories[prevState.index + direction].duration }));
+      setCurrentIndex(prevState => prevState + direction);
       animateIndicator();
     }
   }
@@ -37,14 +34,14 @@ export const Story: React.FC<Props> = ({ display }) => {
   const animation = useCallback(() => {
     return Animated.timing(barWidth, {
       toValue: 1,
-      duration: currentIndex.duration,
+      duration: mockStories[currentStoryIndex]?.stories[currentIndex]?.duration,
       useNativeDriver: false
     })
   }, [currentIndex, currentStoryIndex])
 
   const getDuration = useCallback(() => {
     //@ts-ignore
-    return currentIndex.duration * (1 - barWidth._value)
+    return mockStories[currentStoryIndex]?.stories[currentIndex]?.duration * (1 - barWidth._value)
   }, [currentStoryIndex, currentIndex])
 
   const animateIndicator = (reset = true) => {
@@ -58,7 +55,7 @@ export const Story: React.FC<Props> = ({ display }) => {
       }).start(({ finished }) => {
         if (finished) {
           if (paused) {
-            setCurrentIndex(prevState => ({ ...prevState, index: prevState.index + 1, duration: mockStories[currentStoryIndex].stories[prevState.index].duration }));
+            setCurrentIndex(prevState => prevState + 1);
             animateIndicator();
           }
           else {
@@ -94,13 +91,13 @@ export const Story: React.FC<Props> = ({ display }) => {
       return play();
     }
     animateIndicator();
-    setCurrentIndex(prevState => ({ ...prevState, index: prevState.index + 1, duration: mockStories[currentStoryIndex].stories[prevState.index].duration }));
+    setCurrentIndex(prevState => prevState + 1);
   }, [paused, animateIndicator, play])
 
 
   useEffect(() => {
-    if (currentIndex.index === mockStories[currentStoryIndex]?.stories?.length) {
-      setCurrentIndex({ index: 0, duration: mockStories[0].stories[0].duration });
+    if (currentIndex === mockStories[currentStoryIndex]?.stories?.length) {
+      setCurrentIndex(0);
       setPaused(false);
       barWidth.setValue(0);
       setCurrentStoryIndex(prevState => prevState + 1);
@@ -110,14 +107,14 @@ export const Story: React.FC<Props> = ({ display }) => {
   if (currentStoryIndex === mockStories.length) {
     return null;
   }
-  else if (mockStories[currentStoryIndex]?.stories[currentIndex.index]?.image)
+  else if (mockStories[currentStoryIndex]?.stories[currentIndex]?.image)
     return (
       <SafeAreaView style={display ? styles.containerOpen : styles.containerClosed}>
         {!paused &&
           <View style={styles.activityIndicatorContainer}>
             {mockStories[currentStoryIndex].stories.map((item, index) => {
               return (
-                <Indicator index={index} currentIndex={currentIndex.index} barWidth={barWidth} />
+                <Indicator index={index} currentIndex={currentIndex} barWidth={barWidth} />
               )
             })}
           </View>}
@@ -125,9 +122,9 @@ export const Story: React.FC<Props> = ({ display }) => {
           style={styles.storiesContainer}
           onLongPress={pause}
           onPressOut={onPressOut}>
-          {mockStories[currentStoryIndex].stories[currentIndex.index].type === 'video' ?
-            display && <Video paused={paused} style={StyleSheet.absoluteFillObject} source={mockStories[currentStoryIndex].stories[currentIndex.index].image} onLoad={(data) => console.log(data, 'dataonload')} /> :
-            <Image style={styles.image} source={{ uri: mockStories[currentStoryIndex].stories[currentIndex.index].image }} />}
+          {mockStories[currentStoryIndex].stories[currentIndex].type === 'video' ?
+            display && <Video paused={paused} style={StyleSheet.absoluteFillObject} source={mockStories[currentStoryIndex].stories[currentIndex].image} onLoad={(data) => console.log(data, 'dataonload')} /> :
+            <Image style={styles.image} source={{ uri: mockStories[currentStoryIndex].stories[currentIndex].image }} />}
         </Pressable>
       </SafeAreaView>
     )
