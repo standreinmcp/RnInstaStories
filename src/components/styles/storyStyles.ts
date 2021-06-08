@@ -1,46 +1,49 @@
-import {StyleSheet} from 'react-native';
-import {WIDTH, HEIGHT} from '../../constants/constants';
+import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  containerOpen: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%'
   },
-  deck: {
-    width: WIDTH,
-    height: HEIGHT,
-    backgroundColor: 'white',
+  containerClosed: {
+    position: 'absolute',
+    width: 0,
+    height: 0
   },
-  indicators: {
+  activityIndicatorContainer: {
+    width: '100%',
+    zIndex: 10,
+    paddingHorizontal: 50,
     height: 30,
-    alignItems: 'center',
-    paddingHorizontal: 8,
+    overflow: 'hidden',
+    justifyContent: 'flex-start',
+    flexDirection: 'row'
+  },
+  indicatorContainer: {
+    flex: 1,
+    height: 20,
     flexDirection: 'row',
+    marginHorizontal: 10
   },
-  indicatorBg: {
-    ...StyleSheet.absoluteFillObject,
-    height: 50,
+  indicatorContainerActive: {
+    backgroundColor: 'red',
   },
-
-  back: {
-    backgroundColor: 'transparent',
-    ...StyleSheet.absoluteFillObject,
-    width: 90,
+  indicatorContainerInactive: {
+    backgroundColor: 'grey',
   },
-
-  closeButton: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    width: 70,
-    height: 70,
-    zIndex: 1,
+  activityIndicator: {
+    height: 20,
+    backgroundColor: 'red'
   },
-  closeCross: {
-    position: 'absolute',
-    top: 32,
-    right: 8,
-    width: 20,
-    height: 1,
-    backgroundColor: '#fff',
+  storiesContainer: {
+    width: '100%',
+    height: '100%',
+    ...StyleSheet.absoluteFillObject
   },
+  image: {
+    width: '100%',
+    height: '100%',
+    ...StyleSheet.absoluteFillObject
+  }
 });

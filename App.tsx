@@ -1,11 +1,11 @@
 import React from 'react';
-import {View} from 'react-native';
-import {MainScreen} from './src/features/MainScreen';
+import { View } from 'react-native';
+import { MainStackNavigator } from './src/navigation/MainNavigator';
 
 const App: React.FC = () => {
   return (
-    <View style={{flex: 1}}>
-      <MainScreen />
+    <View style={{ flex: 1 }}>
+      <MainStackNavigator />
     </View>
   );
 };
