@@ -17,7 +17,8 @@ export const Bubbles: React.FC<Props> = ({ openStories }) => {
           style={styles.bubbles}
           contentContainerStyle={{ alignItems: 'center' }}
           horizontal={true}
-          showsHorizontalScrollIndicator={false}>
+          showsHorizontalScrollIndicator={false}
+        >
           {mockStories.map((story, i) => (
             <View ref={bubbleRef} key={i}>
               <Pressable onPress={openStories}>

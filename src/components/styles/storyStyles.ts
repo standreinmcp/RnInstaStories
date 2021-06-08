@@ -20,22 +20,6 @@ export const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     flexDirection: 'row'
   },
-  indicatorContainer: {
-    flex: 1,
-    height: 20,
-    flexDirection: 'row',
-    marginHorizontal: 10
-  },
-  indicatorContainerActive: {
-    backgroundColor: 'red',
-  },
-  indicatorContainerInactive: {
-    backgroundColor: 'grey',
-  },
-  activityIndicator: {
-    height: 20,
-    backgroundColor: 'red'
-  },
   storiesContainer: {
     width: '100%',
     height: '100%',

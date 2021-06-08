@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Pressable, Animated, Image, Dimensions, StyleSheet } from 'react-native';
+import { View, Pressable, Animated, Image, Dimensions, StyleSheet, GestureResponderEvent } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Video from 'react-native-video';
 
 import { mockStories } from '../constants/storiesMockData';
+import { Indicator } from './Indicator';
 import { styles } from './styles/storyStyles';
 
 const { width } = Dimensions.get('window');
@@ -14,21 +15,36 @@ interface Props {
 
 export const Story: React.FC<Props> = ({ display }) => {
   const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState({
+    index: 0,
+    duration: mockStories[0].stories[0].duration
+  });
   const [paused, setPaused] = useState(false);
   const barWidth = useState(new Animated.Value(0))[0];
+
+
+  const onPressOut = (event: GestureResponderEvent) => {
+    if (paused) {
+      play();
+    }
+    else {
+      const direction = event.nativeEvent.locationX < width / 2 ? -1 : 1
+      setCurrentIndex(prevState => ({ ...prevState, index: prevState.index + direction, duration: mockStories[currentStoryIndex].stories[prevState.index + direction].duration }));
+      animateIndicator();
+    }
+  }
 
   const animation = useCallback(() => {
     return Animated.timing(barWidth, {
       toValue: 1,
-      duration: mockStories[currentStoryIndex]?.stories[currentIndex]?.duration,
+      duration: currentIndex.duration,
       useNativeDriver: false
     })
   }, [currentIndex, currentStoryIndex])
 
   const getDuration = useCallback(() => {
     //@ts-ignore
-    return mockStories[currentStoryIndex]?.stories[currentIndex]?.duration * (1 - barWidth._value)
+    return currentIndex.duration * (1 - barWidth._value)
   }, [currentStoryIndex, currentIndex])
 
   const animateIndicator = (reset = true) => {
@@ -42,7 +58,7 @@ export const Story: React.FC<Props> = ({ display }) => {
       }).start(({ finished }) => {
         if (finished) {
           if (paused) {
-            setCurrentIndex(prevState => prevState + 1);
+            setCurrentIndex(prevState => ({ ...prevState, index: prevState.index + 1, duration: mockStories[currentStoryIndex].stories[prevState.index].duration }));
             animateIndicator();
           }
           else {
@@ -78,13 +94,13 @@ export const Story: React.FC<Props> = ({ display }) => {
       return play();
     }
     animateIndicator();
-    setCurrentIndex(prevState => prevState + 1);
+    setCurrentIndex(prevState => ({ ...prevState, index: prevState.index + 1, duration: mockStories[currentStoryIndex].stories[prevState.index].duration }));
   }, [paused, animateIndicator, play])
 
 
   useEffect(() => {
-    if (currentIndex === mockStories[currentStoryIndex]?.stories?.length) {
-      setCurrentIndex(0);
+    if (currentIndex.index === mockStories[currentStoryIndex]?.stories?.length) {
+      setCurrentIndex({ index: 0, duration: mockStories[0].stories[0].duration });
       setPaused(false);
       barWidth.setValue(0);
       setCurrentStoryIndex(prevState => prevState + 1);
@@ -94,37 +110,24 @@ export const Story: React.FC<Props> = ({ display }) => {
   if (currentStoryIndex === mockStories.length) {
     return null;
   }
-  else if (mockStories[currentStoryIndex]?.stories[currentIndex]?.image)
+  else if (mockStories[currentStoryIndex]?.stories[currentIndex.index]?.image)
     return (
       <SafeAreaView style={display ? styles.containerOpen : styles.containerClosed}>
         {!paused &&
           <View style={styles.activityIndicatorContainer}>
             {mockStories[currentStoryIndex].stories.map((item, index) => {
               return (
-                <View style={[styles.indicatorContainer, index < currentIndex ? styles.indicatorContainerActive : styles.indicatorContainerInactive]}>
-                  {currentIndex === index && <Animated.View style={[{
-                    flex: currentIndex === index ? barWidth : 1
-                  }, styles.activityIndicator]} />}
-                </View>
+                <Indicator index={index} currentIndex={currentIndex.index} barWidth={barWidth} />
               )
             })}
           </View>}
         <Pressable
           style={styles.storiesContainer}
           onLongPress={pause}
-          onPressOut={(event) => {
-            if (paused) {
-              play();
-            }
-            else {
-              const direction = event.nativeEvent.locationX < width / 2 ? -1 : 1
-              setCurrentIndex(prevState => prevState + direction);
-              animateIndicator();
-            }
-          }}>
-          {mockStories[currentStoryIndex].stories[currentIndex].type === 'video' ?
-            display && <Video paused={paused} style={StyleSheet.absoluteFillObject} source={mockStories[currentStoryIndex].stories[currentIndex].image} onLoad={(data) => console.log(data, 'dataonload')} /> :
-            <Image style={styles.image} source={{ uri: mockStories[currentStoryIndex].stories[currentIndex].image }} />}
+          onPressOut={onPressOut}>
+          {mockStories[currentStoryIndex].stories[currentIndex.index].type === 'video' ?
+            display && <Video paused={paused} style={StyleSheet.absoluteFillObject} source={mockStories[currentStoryIndex].stories[currentIndex.index].image} onLoad={(data) => console.log(data, 'dataonload')} /> :
+            <Image style={styles.image} source={{ uri: mockStories[currentStoryIndex].stories[currentIndex.index].image }} />}
         </Pressable>
       </SafeAreaView>
     )
