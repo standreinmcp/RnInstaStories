@@ -126,7 +126,7 @@ export const Story: React.FC<Props> = ({ display }) => {
           onLongPress={pause}
           onPressOut={onPressOut}>
           {mockStories[currentStoryIndex].stories[currentIndex.index].type === 'video' ?
-            display && <Video paused={paused} style={StyleSheet.absoluteFillObject} source={mockStories[currentStoryIndex].stories[currentIndex.index].image} onLoad={(data) => console.log(data, 'dataonload')} /> :
+            display && <Video paused={paused} style={StyleSheet.absoluteFillObject} source={mockStories[currentStoryIndex].stories[currentIndex.index].image} /> :
             <Image style={styles.image} source={{ uri: mockStories[currentStoryIndex].stories[currentIndex.index].image }} />}
         </Pressable>
       </SafeAreaView>
